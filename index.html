@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LINGO</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="box27">
+  <div class="box1">
+    <div class="box2">
+      <div class="box3">L</div>
+      <div>
+        <h1 class="box4">LINGO</h1>
+        <p class="box5" data-text="subtitle">Переводчик</p>
+      </div>
+    </div>
+    <div>
+      <select class="box28" id="interfaceLang">
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+        <option value="tg">Тоҷикӣ</option>
+      </select>
+      <button class="box17" id="historyButton" data-text="history">История</button>
+    </div>
+  </div>
+
+  <div class="box6">
+    <div class="box7">
+      <select class="box28" id="fromLang"></select>
+      <button class="box8" id="swapButton">⇄</button>
+      <select class="box28" id="toLang"></select>
+    </div>
+
+    <div class="box9">
+      <div class="box10">
+        <textarea class="box29" id="inputText" maxlength="5000" data-placeholder="inputPlaceholder"></textarea>
+        <div class="box12">
+          <span id="detectedText"></span>
+          <span id="counter">0 / 5000</span>
+        </div>
+      </div>
+
+      <div class="box10 box11">
+        <textarea class="box29" id="outputText" readonly data-placeholder="outputPlaceholder"></textarea>
+        <div class="box12"></div>
+        <div class="box13" id="loader" hidden>
+          <div class="box14"></div>
+          <span data-text="loading">Переводим...</span>
+        </div>
+        <div class="box15" id="errorBox" hidden>
+          <span id="errorText"></span>
+          <button class="box17" id="retryButton" data-text="retry">Повторить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="box16">
+      <button class="box17 box18" id="translateButton" data-text="translate">Перевести</button>
+      <button class="box17" id="copyButton" data-text="copy">Скопировать</button>
+      <button class="box17" id="clearButton" data-text="clear">Очистить</button>
+    </div>
+  </div>
+
+  <div class="box19" id="historyPanel">
+    <div class="box21">
+      <h2 data-text="history">История</h2>
+      <button class="box17" id="closeButton">✕</button>
+    </div>
+    <div id="historyList"></div>
+    <button class="box17" id="clearHistoryButton" data-text="clearHistory">Очистить историю</button>
+  </div>
+  <div class="box26" id="shadow" hidden></div>
+
+  <script src="/script.js"></script>
+</body>
+</html>

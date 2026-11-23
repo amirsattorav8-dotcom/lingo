@@ -1,0 +1,384 @@
+/* Шапка сайта */
+.box1 {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 20px;
+  padding-right: 16px;
+  padding-bottom: 20px;
+  padding-left: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Логотип и название */
+.box2 {
+  display: flex;
+  align-items: center;
+}
+
+/* Синий квадрат с буквой L */
+.box3 {
+  width: 42px;
+  height: 42px;
+  margin-right: 12px;
+  border-radius: 12px;
+  background-color: dodgerblue;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 42px;
+}
+
+/* Название LINGO */
+.box4 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-size: 22px;
+}
+
+/* Подпись под названием */
+.box5 {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  font-size: 13px;
+  color: slategray;
+}
+
+/* Белая карточка переводчика */
+.box6 {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  background-color: white;
+  border-radius: 22px;
+  box-shadow: 0px 8px 24px lightgray;
+}
+
+/* Строка с выбором языков */
+.box7 {
+  display: flex;
+  margin-bottom: 14px;
+}
+
+/* Круглая кнопка смены языков */
+.box8 {
+  width: 44px;
+  height: 44px;
+  margin-left: 10px;
+  margin-right: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: lightgray;
+  border-radius: 22px;
+  background-color: aliceblue;
+  color: royalblue;
+  font-size: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Две панели рядом */
+.box9 {
+  display: flex;
+}
+
+/* Одна панель с текстом */
+.box10 {
+  flex: 1;
+  min-width: 0px;
+  position: relative;
+  margin-right: 14px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: gainsboro;
+  border-radius: 16px;
+  background-color: ghostwhite;
+}
+
+/* Правая панель чуть голубее */
+.box11 {
+  margin-right: 0px;
+  background-color: aliceblue;
+}
+
+/* Строка под полем: язык и счётчик */
+.box12 {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 4px;
+  padding-right: 16px;
+  padding-bottom: 12px;
+  padding-left: 16px;
+  font-size: 13px;
+  color: slategray;
+}
+
+/* Загрузка: закрывает поле, текст по центру */
+.box13 {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  height: 250px;
+  line-height: 250px;
+  text-align: center;
+  border-radius: 16px;
+  background-color: aliceblue;
+  color: royalblue;
+}
+
+/* Крутящийся кружок загрузки */
+.box14 {
+  display: inline-block;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: lightblue;
+  border-top-color: dodgerblue;
+  border-radius: 13px;
+  animation-name: spin;
+  animation-duration: 1s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* Блок с ошибкой */
+.box15 {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  border-radius: 10px;
+  background-color: mistyrose;
+  color: firebrick;
+  font-size: 14px;
+}
+
+/* Ряд с главными кнопками */
+.box16 {
+  margin-top: 16px;
+}
+
+/* Обычная кнопка */
+.box17 {
+  padding-top: 10px;
+  padding-right: 20px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  margin-right: 8px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: lightgray;
+  border-radius: 10px;
+  background-color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* Синяя кнопка «Перевести» */
+.box18 {
+  background-color: dodgerblue;
+  border-color: dodgerblue;
+  color: white;
+}
+
+/* Панель истории (спрятана справа за экраном) */
+.box19 {
+  position: fixed;
+  top: 0px;
+  right: -360px;
+  bottom: 0px;
+  width: 320px;
+  box-sizing: border-box;
+  padding-top: 18px;
+  padding-right: 18px;
+  padding-bottom: 18px;
+  padding-left: 18px;
+  background-color: white;
+  box-shadow: -8px 0px 24px lightgray;
+  overflow-y: auto;
+  transition: 0.3s;
+  z-index: 20;
+}
+
+/* Панель истории показана */
+.box20 {
+  right: 0px;
+}
+
+/* Заголовок панели истории */
+.box21 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Одна запись в истории */
+.box22 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: gainsboro;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* Маленькая серая строка с языками */
+.box23 {
+  font-size: 12px;
+  color: slategray;
+}
+
+/* Строка текста в одну линию */
+.box24 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Синий цвет для перевода */
+.box25 {
+  color: royalblue;
+}
+
+/* Тёмный фон за панелью истории */
+.box26 {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  background-color: black;
+  opacity: 0.3;
+  z-index: 10;
+}
+
+/* Вся страница */
+.box27 {
+  margin-top: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+  margin-left: 0px;
+  font-family: Arial;
+  font-size: 16px;
+  color: black;
+  background-color: aliceblue;
+}
+
+/* Списки выбора языка */
+.box28 {
+  flex: 1;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: lightgray;
+  border-radius: 10px;
+  background-color: white;
+  font-size: 15px;
+}
+
+/* Поля для текста */
+.box29 {
+  display: block;
+  width: 100%;
+  height: 250px;
+  padding-top: 16px;
+  padding-right: 16px;
+  padding-bottom: 16px;
+  padding-left: 16px;
+  box-sizing: border-box;
+  border-style: none;
+  border-radius: 16px;
+  background-color: transparent;
+  font-size: 18px;
+  font-family: Arial;
+  resize: none;
+  outline-style: none;
+}
+
+/* Эффекты при наведении */
+
+/* Кнопка смены языков при наведении */
+.box8:hover {
+  background-color: lightblue;
+}
+
+/* Кнопка при наведении */
+.box17:hover {
+  background-color: aliceblue;
+}
+
+/* Синяя кнопка при наведении */
+.box18:hover {
+  background-color: royalblue;
+}
+
+/* Запись истории при наведении */
+.box22:hover {
+  background-color: aliceblue;
+}
+
+/* Вращение кружка */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Стили для телефона */
+@media (max-width: 700px) {
+  .box6 {
+    margin-left: 12px;
+    margin-right: 12px;
+    padding-top: 12px;
+    padding-right: 12px;
+    padding-bottom: 12px;
+    padding-left: 12px;
+  }
+
+  .box9 {
+    display: block;
+  }
+
+  .box10 {
+    margin-right: 0px;
+    margin-bottom: 14px;
+  }
+
+  .box11 {
+    margin-bottom: 0px;
+  }
+
+  .box13 {
+    height: 160px;
+    line-height: 160px;
+  }
+
+  .box29 {
+    height: 160px;
+  }
+}
