@@ -14,6 +14,9 @@ const MAX_CHARS = 5000;
 // Ключ Google (необязательно): GOOGLE_TRANSLATE_API_KEY=ключ node server.js
 const API_KEY = process.env.GOOGLE_TRANSLATE_API_KEY || "";
 
+// Почта для запасного переводчика (необязательно, увеличивает дневной лимит)
+const MYMEMORY_EMAIL = process.env.MYMEMORY_EMAIL || "";
+
 // Коды языков, которые мы поддерживаем
 const languageCodes = [
   "ru", "en", "tg", "de", "fr", "es", "zh-CN", "ar", "it", "pt",
@@ -100,6 +103,101 @@ async function translateOfficial(text, source, target) {
   return { translation: item.translatedText, detected: item.detectedSourceLanguage || source };
 }
 
+// Режем длинный текст на короткие куски
+function splitText(text, size) {
+  const parts = [];
+  let rest = text;
+  while (rest.length > size) {
+    let cut = rest.lastIndexOf(" ", size);
+    if (cut < 1) {
+      cut = size;
+    }
+    parts.push(rest.slice(0, cut));
+    rest = rest.slice(cut);
+  }
+  parts.push(rest);
+  return parts;
+}
+
+// Запасной переводчик MyMemory (бесплатный, без ключа)
+async function translateMyMemory(text, source, target) {
+  if (text.length > 1000) {
+    return { error: "Запасной переводчик принимает текст до 1000 символов." };
+  }
+  const from = source === "auto" ? "Autodetect" : source;
+  const parts = splitText(text, 150);
+  let result = "";
+  let detected = "";
+
+  // Переводим текст по кускам
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i].trim();
+    if (part === "") {
+      continue;
+    }
+    let url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(part);
+    url = url + "&langpair=" + encodeURIComponent(from + "|" + target);
+    if (MYMEMORY_EMAIL !== "") {
+      url = url + "&de=" + encodeURIComponent(MYMEMORY_EMAIL);
+    }
+    const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
+    if (!response.ok) {
+      return { error: "Запасной переводчик не отвечает. Попробуйте позже." };
+    }
+    const data = await response.json();
+    const answer = data.responseData ? String(data.responseData.translatedText) : "";
+
+    // Если дневной лимит закончился
+    if (data.quotaFinished || answer.indexOf("MYMEMORY WARNING") === 0) {
+      return { error: "Лимит запасного переводчика на сегодня закончился." };
+    }
+    if (String(data.responseStatus) !== "200") {
+      return { error: "Запасной переводчик не смог перевести этот текст." };
+    }
+    result = result + answer + " ";
+    if (detected === "" && data.responseData.detectedLanguage) {
+      detected = String(data.responseData.detectedLanguage);
+    }
+  }
+
+  // Язык оставляем, только если он есть в нашем списке
+  if (languageCodes.indexOf(detected) === -1) {
+    detected = detected.split("-")[0];
+  }
+  if (languageCodes.indexOf(detected) === -1) {
+    detected = "";
+  }
+  return { translation: result.trim(), detected: detected };
+}
+
+// Сначала пробуем Google, если не вышло, то запасной переводчик
+async function getTranslation(text, source, target) {
+  let result = null;
+  try {
+    if (API_KEY !== "") {
+      result = await translateOfficial(text, source, target);
+    } else {
+      result = await translateFree(text, source, target);
+    }
+  } catch (error) {
+    result = { error: "Не удалось получить перевод. Проверьте интернет." };
+  }
+  if (!result.error) {
+    return result;
+  }
+
+  // Google не помог, пробуем MyMemory
+  try {
+    const backup = await translateMyMemory(text, source, target);
+    if (!backup.error) {
+      return backup;
+    }
+    return { error: backup.error };
+  } catch (error) {
+    return { error: result.error };
+  }
+}
+
 // Обрабатываем запрос на перевод
 async function handleTranslate(res, body) {
   // Превращаем текст запроса в объект
@@ -135,12 +233,7 @@ async function handleTranslate(res, body) {
 
   // Переводим и отправляем результат
   try {
-    let result = null;
-    if (API_KEY !== "") {
-      result = await translateOfficial(text, source, target);
-    } else {
-      result = await translateFree(text, source, target);
-    }
+    const result = await getTranslation(text, source, target);
     if (result.error) {
       sendJson(res, 502, { error: result.error });
     } else {
@@ -320,6 +413,9 @@ function t(key) {
 
 // Показываем название языка по коду
 function langName(code) {
+  if (code === "auto") {
+    return t("auto");
+  }
   return languages[code] || code;
 }
 
