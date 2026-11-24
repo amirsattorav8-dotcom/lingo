@@ -293,6 +293,26 @@ var historyPanel = document.getElementById("historyPanel");
 var historyList = document.getElementById("historyList");
 var shadow = document.getElementById("shadow");
 
+// Картинки для значка: копирование и галочка
+var copyIcon = "<svg width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='dimgray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='9' width='12' height='12' rx='2'></rect><path d='M9 9V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-4'></path></svg>";
+var checkIcon = "<svg width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='green' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M5 13l4 4L19 7'></path></svg>";
+
+// Кнопка копирования становится значком в углу перевода
+copyButton.removeAttribute("data-text");
+copyButton.className = "";
+copyButton.innerHTML = copyIcon;
+copyButton.style.cssText = "position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border-style: none; border-radius: 8px; background-color: transparent; cursor: pointer;";
+copyButton.onmouseover = function () {
+  copyButton.style.backgroundColor = "aliceblue";
+};
+copyButton.onmouseout = function () {
+  copyButton.style.backgroundColor = "transparent";
+};
+outputText.parentNode.appendChild(copyButton);
+
+// Кнопку «Очистить» убираем со страницы
+document.getElementById("clearButton").remove();
+
 // Берём текст на выбранном языке интерфейса
 function t(key) {
   return texts[interfaceLanguage][key];
@@ -316,6 +336,7 @@ function applyInterface() {
   }
   fromLang.options[0].textContent = t("auto");
   interfaceLang.value = interfaceLanguage;
+  copyButton.title = t("copy");
   showDetected();
   showHistory();
 }
@@ -432,11 +453,11 @@ function swapLanguages() {
   saveLanguages();
 }
 
-// Показываем «Скопировано» на секунду
+// Показываем галочку на секунду
 function showCopied() {
-  copyButton.textContent = t("copied");
+  copyButton.innerHTML = checkIcon;
   setTimeout(function () {
-    copyButton.textContent = t("copy");
+    copyButton.innerHTML = copyIcon;
   }, 1500);
 }
 
@@ -456,17 +477,6 @@ async function copyText() {
       showError(t("errCopy"), false);
     }
   }
-}
-
-// Очищаем оба поля
-function clearText() {
-  inputText.value = "";
-  outputText.value = "";
-  detectedLanguage = "";
-  errorBox.hidden = true;
-  showDetected();
-  updateCounter();
-  inputText.focus();
 }
 
 // Добавляем перевод в историю (не больше 50 записей)
@@ -548,10 +558,9 @@ function closeHistory() {
 translateButton.onclick = translateText;
 retryButton.onclick = translateText;
 
-// Кнопки смены языков, копирования и очистки
+// Кнопки смены языков и копирования
 document.getElementById("swapButton").onclick = swapLanguages;
 copyButton.onclick = copyText;
-document.getElementById("clearButton").onclick = clearText;
 
 // Кнопки истории
 document.getElementById("historyButton").onclick = openHistory;
