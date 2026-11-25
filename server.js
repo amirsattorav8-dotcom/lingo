@@ -8,6 +8,9 @@ const path = require("path");
 // Порт сервера (хостинг сам задаёт его, на компьютере будет 3000)
 const PORT = process.env.PORT || 3000;
 
+// Адрес сайта в интернете (нужен для карты сайта)
+const SITE_URL = process.env.SITE_URL || "https://lingo-wac3.onrender.com";
+
 // Максимальная длина текста
 const MAX_CHARS = 5000;
 
@@ -272,6 +275,25 @@ const server = http.createServer(function (req, res) {
   // Стили страницы
   if (req.method === "GET" && address === "/style.css") {
     sendFile(res, "style.css", "text/css; charset=utf-8");
+    return;
+  }
+
+  // Файл для поисковых роботов
+  if (req.method === "GET" && address === "/robots.txt") {
+    res.writeHead(200, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("User-agent: *\nAllow: /\n\nSitemap: " + SITE_URL + "/sitemap.xml\n");
+    return;
+  }
+
+  // Карта сайта для Google
+  if (req.method === "GET" && address === "/sitemap.xml") {
+    res.writeHead(200, { "Content-Type": "application/xml; charset=utf-8" });
+    res.end(
+      '<?xml version="1.0" encoding="UTF-8"?>\n' +
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+      "  <url>\n    <loc>" + SITE_URL + "/</loc>\n  </url>\n" +
+      "</urlset>\n"
+    );
     return;
   }
 
