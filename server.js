@@ -275,6 +275,12 @@ const server = http.createServer(function (req, res) {
     return;
   }
 
+  // Файл для подтверждения сайта в Google (имя вида google....html)
+  if (req.method === "GET" && /^\/google[a-z0-9]+\.html$/.test(address)) {
+    sendFile(res, address.slice(1), "text/html; charset=utf-8");
+    return;
+  }
+
   // Отдаём JavaScript для страницы
   if (req.method === "GET" && address === "/script.js") {
     res.writeHead(200, {
