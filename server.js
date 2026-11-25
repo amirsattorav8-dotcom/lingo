@@ -58,6 +58,7 @@ async function translateFree(text, source, target) {
   });
 
   // Если Google ограничил запросы
+  console.log("Google ответил кодом", response.status);
   if (response.status === 429) {
     return { error: "Сервис перевода временно ограничил запросы. Попробуйте позже." };
   }
@@ -142,7 +143,8 @@ async function translateMyMemory(text, source, target) {
     }
     const response = await fetch(url, { signal: AbortSignal.timeout(15000) });
     if (!response.ok) {
-      return { error: "Запасной переводчик не отвечает. Попробуйте позже." };
+      console.log("MyMemory ответил кодом", response.status);
+      return { error: "Запасной переводчик не отвечает (код " + response.status + "). Попробуйте позже." };
     }
     const data = await response.json();
     const answer = data.responseData ? String(data.responseData.translatedText) : "";
@@ -180,6 +182,7 @@ async function getTranslation(text, source, target) {
       result = await translateFree(text, source, target);
     }
   } catch (error) {
+    console.log("Google: ошибка запроса:", error.message);
     result = { error: "Не удалось получить перевод. Проверьте интернет." };
   }
   if (!result.error) {
@@ -194,6 +197,7 @@ async function getTranslation(text, source, target) {
     }
     return { error: backup.error };
   } catch (error) {
+    console.log("MyMemory: ошибка запроса:", error.message);
     return { error: result.error };
   }
 }
