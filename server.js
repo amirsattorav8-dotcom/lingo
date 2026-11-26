@@ -521,6 +521,116 @@ function showError(message, canRetry) {
   errorBox.hidden = false;
 }
 
+// Режем длинный текст на короткие куски
+function splitText(text, size) {
+  var parts = [];
+  var rest = text;
+  while (rest.length > size) {
+    var cut = rest.lastIndexOf(" ", size);
+    if (cut < 1) {
+      cut = size;
+    }
+    parts.push(rest.slice(0, cut));
+    rest = rest.slice(cut);
+  }
+  parts.push(rest);
+  return parts;
+}
+
+// Оставляем язык, только если он есть в нашем списке
+function cleanLanguage(code) {
+  if (!code) {
+    return "";
+  }
+  if (languages[code]) {
+    return code;
+  }
+  var shortCode = String(code).split("-")[0];
+  if (languages[shortCode]) {
+    return shortCode;
+  }
+  return "";
+}
+
+// Перевод Google прямо из браузера
+async function browserGoogle(text, from, to) {
+  var url = "https://translate.googleapis.com/translate_a/single?client=gtx&dt=t&sl=" + from + "&tl=" + to + "&q=" + encodeURIComponent(text);
+  var response = await fetch(url);
+  if (!response.ok) {
+    return null;
+  }
+  var data = await response.json();
+  var result = "";
+  for (var i = 0; i < data[0].length; i++) {
+    if (data[0][i] && data[0][i][0]) {
+      result = result + data[0][i][0];
+    }
+  }
+  return { translation: result, detected: cleanLanguage(data[2]) };
+}
+
+// Перевод MyMemory прямо из браузера
+async function browserMyMemory(text, from, to) {
+  var source = from === "auto" ? "Autodetect" : from;
+  var parts = splitText(text, 150);
+  var result = "";
+  var detected = "";
+  for (var i = 0; i < parts.length; i++) {
+    var part = parts[i].trim();
+    if (part === "") {
+      continue;
+    }
+    var url = "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(part) + "&langpair=" + encodeURIComponent(source + "|" + to);
+    var response = await fetch(url);
+    if (!response.ok) {
+      return null;
+    }
+    var data = await response.json();
+    var answer = data.responseData ? String(data.responseData.translatedText) : "";
+    if (data.quotaFinished || answer.indexOf("MYMEMORY WARNING") === 0 || String(data.responseStatus) !== "200") {
+      return null;
+    }
+    result = result + answer + " ";
+    if (detected === "" && data.responseData.detectedLanguage) {
+      detected = cleanLanguage(data.responseData.detectedLanguage);
+    }
+  }
+  return { translation: result.trim(), detected: detected };
+}
+
+// Если сервер не справился, переводим из браузера посетителя
+async function translateInBrowser(text, from, to) {
+  try {
+    if (text.length <= 1500) {
+      var google = await browserGoogle(text, from, to);
+      if (google && google.translation !== "") {
+        return google;
+      }
+    }
+  } catch (error) {
+    // Google из браузера не ответил, пробуем MyMemory
+  }
+  try {
+    if (text.length <= 1000) {
+      var memory = await browserMyMemory(text, from, to);
+      if (memory && memory.translation !== "") {
+        return memory;
+      }
+    }
+  } catch (error) {
+    // MyMemory из браузера тоже не ответил
+  }
+  return null;
+}
+
+// Показываем готовый перевод и сохраняем его в историю
+function showResult(text, data) {
+  outputText.value = data.translation;
+  detectedLanguage = data.detected || "";
+  showDetected();
+  addToHistory(text, data.translation, detectedLanguage || fromLang.value, toLang.value);
+}
+
 // Отправляем текст на сервер и показываем перевод
 async function translateText() {
   var text = inputText.value.trim();
@@ -543,13 +653,18 @@ async function translateText() {
     } catch (error) {
       data = {};
     }
-    if (!response.ok) {
-      showError(data.error || t("errServer"), true);
+    if (response.ok) {
+      showResult(text, data);
+    } else if (response.status === 502 || response.status === 504) {
+      // Сервер не смог, пробуем перевести из браузера
+      var backup = await translateInBrowser(text, fromLang.value, toLang.value);
+      if (backup) {
+        showResult(text, backup);
+      } else {
+        showError(data.error || t("errServer"), true);
+      }
     } else {
-      outputText.value = data.translation;
-      detectedLanguage = data.detected || "";
-      showDetected();
-      addToHistory(text, data.translation, detectedLanguage || fromLang.value, toLang.value);
+      showError(data.error || t("errServer"), true);
     }
   } catch (error) {
     showError(t("errNetwork"), true);
